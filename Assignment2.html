@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+    .button {
+        background-color: #2E1BFF; //blue
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+</style>
+
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+// attributes vPosition and vColor, passed from application
+// via buffers
+attribute vec4 vPosition;
+attribute vec4 vColor;
+
+// varying fColor, passed from vertex shader
+// to fragment shader
+varying vec4 fColor;
+
+// passed from vertex shader
+uniform float moveAmount;
+uniform float moveAmountRed;
+uniform float isFlipped;
+uniform float moveVertical;
+uniform float moveWaves;
+
+vec4 moveFunction() {
+    if (abs(vColor.y-.16)<.0001 || abs(vColor.x-.03)<.0001) { // red fish move faster
+        return vec4(moveAmountRed,moveVertical,0,0);
+    }
+    else if (abs(vColor.x-.7)<.001) { // sky doesn't move at all
+        return vec4(moveWaves,0,0,0);
+    }
+    else return vec4(moveAmount,moveVertical,0,0);  // other fish move by moveAmount
+}
+
+//
+void
+main()
+{
+    gl_Position = vPosition + moveFunction();
+    gl_Position.x = gl_Position.x * isFlipped;
+    fColor = vColor;
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+// FRAGMENT SHADER
+// This is applied to every vertex
+
+// set floating point precision to be "medium"
+precision mediump float;
+
+//  varying fColor (passed from vertex shader) is
+// assigned to gl_FragColor.
+varying vec4 fColor;
+
+void main()
+{
+    gl_FragColor = fColor;
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="Assignment2.js"></script>
+
+<body>
+<canvas id="gl-canvas" width="512" height="512">
+    Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+</body>
+
+<p><button id="FlipImageButton" class="button">Flip the image horizontally</button>
+</p>
+
+</html>
